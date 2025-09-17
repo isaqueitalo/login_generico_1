@@ -24,12 +24,17 @@ class Connection:
     @staticmethod
     def is_valid_password(password):
         return len(password) > 8
+    
+    @staticmethod
+    def login_message(user, msg):
+        print(f'login: {user}, {msg}')
+
         
 
 # Usando o método de classe
-c1 = Connection.create_with_credentials('admin', 'admin 123')
+user_1 = Connection.create_with_credentials('admin', 'admin 123')
 
-print(c1.user)      # admin
-print(c1.password)  # admin 123
-
+print(user_1.user)      # admin
+print(user_1.password)  # admin 123
+Connection.login_message(user_1.user, 'logado com sucesso!')
 
