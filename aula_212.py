@@ -17,6 +17,10 @@ class Connection:
         connection.password = password
         connection.user = user
         return connection
+    
+    @staticmethod
+    def is_valid_password(password):
+        return len(password) > 8
         
 
 c1 = Connection()
@@ -24,5 +28,8 @@ c1 = Connection.criate_with_credentials('admin', 'admin 123')
 # c1.set_user('admin')
 # c1.set_password('admin 123')
 
+
 print(c1.user)
 print(c1.password)
+print(Connection.is_valid_password(f'password verification: {c1.password}'))
+
