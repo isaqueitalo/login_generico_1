@@ -9,13 +9,16 @@ class Connection:
         self.user = user
 
     def set_password(self, password):
-        self.password = password
+        if self.is_valid_password(password):
+            self.password = password
+        else:
+            raise ValueError("Senha inválida! A senha deve ter mais de 8 caracteres.")
 
     @classmethod
-    def criate_with_credentials(cls, user, password):
+    def create_with_credentials(cls, user, password):
         connection = cls()
-        connection.password = password
-        connection.user = user
+        connection.set_user(user)
+        connection.set_password(password)
         return connection
     
     @staticmethod
@@ -23,13 +26,10 @@ class Connection:
         return len(password) > 8
         
 
-c1 = Connection()
-c1 = Connection.criate_with_credentials('admin', 'admin 123')
-# c1.set_user('admin')
-# c1.set_password('admin 123')
+# Usando o método de classe
+c1 = Connection.create_with_credentials('admin', 'admin 123')
 
+print(c1.user)      # admin
+print(c1.password)  # admin 123
 
-print(c1.user)
-print(c1.password)
-print(Connection.is_valid_password(f'password verification: {c1.password}'))
 
