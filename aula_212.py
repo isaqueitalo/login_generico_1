@@ -1,10 +1,15 @@
 class Connection:
+    # Credenciais fixas (apenas esses usuários podem logar)
+    _valid_users = {
+        "admin_master": "senha_super123",
+        "guest_user": "guest_password456"
+    }
 
     def __init__(self, host='localhost'):
         self.host = host
-        self._user = None          # atributos protegidos
+        self._user = None
         self._password = None
-        self.connected = False     # estado da conexão
+        self.connected = False
 
     # ===== Getter e Setter para user =====
     @property
@@ -34,8 +39,8 @@ class Connection:
     @classmethod
     def create_with_credentials(cls, user, password):
         connection = cls()
-        connection.user = user               # usa o setter com validação
-        connection.password = password       # idem para senha
+        connection.user = user
+        connection.password = password
         return connection
     
     @staticmethod
@@ -48,8 +53,11 @@ class Connection:
 
     def connect(self):
         if self._user and self._password:
-            self.connected = True
-            self.login_message(self._user, "conectado com sucesso!")
+            if self._user in self._valid_users and self._valid_users[self._user] == self._password:
+                self.connected = True
+                self.login_message(self._user, "conectado com sucesso!")
+            else:
+                raise ValueError("Login ou senha incorretos!")
         else:
             raise ValueError("Usuário ou senha não definidos!")
 
@@ -66,17 +74,31 @@ class Connection:
         
 
 # =====================
-# Exemplo interativo
+# Testando os usuários
 # =====================
 try:
-    login = input("Digite o usuário: ")
-    senha = input("Digite a senha: ")
-
-    user_1 = Connection.create_with_credentials(login, senha)
-    print(user_1)          # mostra status inicial
-    user_1.connect()       # tenta conectar
-    print(user_1)          # mostra status conectado
-    user_1.disconnect()    # desconecta
-
+    user_1 = Connection.create_with_credentials("admin_master", "senha_super123")
+    user_1.connect()
+    print(user_1)
+    user_1.disconnect()
 except Exception as e:
-    print(f"Erro: {e}")
+    print(f"Erro user_1: {e}")
+
+print()
+
+try:
+    user_2 = Connection.create_with_credentials("guest_user", "guest_password456")
+    user_2.connect()
+    print(user_2)
+    user_2.disconnect()
+except Exception as e:
+    print(f"Erro user_2: {e}")
+
+print()
+
+# Teste com login/senha inválidos
+try:
+    fake = Connection.create_with_credentials("admin_master", "senha_errada")
+    fake.connect()
+except Exception as e:
+    print(f"Erro fake: {e}")
