@@ -74,31 +74,16 @@ class Connection:
         
 
 # =====================
-# Testando os usuários
+# Login interativo
 # =====================
 try:
-    user_1 = Connection.create_with_credentials("admin_master", "senha_super123")
-    user_1.connect()
-    print(user_1)
-    user_1.disconnect()
+    login = input("Digite o usuário: ")
+    senha = input("Digite a senha: ")
+
+    user = Connection.create_with_credentials(login, senha)
+    user.connect()
+    print(user)      # Mostra status conectado
+    #user.disconnect()
+
 except Exception as e:
-    print(f"Erro user_1: {e}")
-
-print()
-
-try:
-    user_2 = Connection.create_with_credentials("guest_user", "guest_password456")
-    user_2.connect()
-    print(user_2)
-    user_2.disconnect()
-except Exception as e:
-    print(f"Erro user_2: {e}")
-
-print()
-
-# Teste com login/senha inválidos
-try:
-    fake = Connection.create_with_credentials("admin_master", "senha_errada")
-    fake.connect()
-except Exception as e:
-    print(f"Erro fake: {e}")
+    print(f"Erro: {e}")
