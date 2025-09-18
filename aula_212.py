@@ -1,5 +1,5 @@
 class Connection:
-    # Credenciais fixas (apenas esses usuários podem logar)
+    # Credenciais fixas (somente esses usuários são aceitos)
     _valid_users = {
         "admin_master": "senha_super123",
         "guest_user": "guest_password456"
@@ -17,9 +17,11 @@ class Connection:
         return self._user
 
     @user.setter
-    def user(self, value):
-        if not value or len(value.strip()) == 0:
+    def user(self, value: str):
+        if not value or not value.strip():
             raise ValueError("Usuário não pode ser vazio!")
+        if value not in self._valid_users:
+            raise ValueError(f"Usuário '{value}' não é permitido!")
         self._user = value
 
     # ===== Getter e Setter para password =====
@@ -30,12 +32,14 @@ class Connection:
         return None
 
     @password.setter
-    def password(self, value):
-        if self.is_valid_password(value):
-            self._password = value
-        else:
-            raise ValueError("Senha inválida! A senha deve ter mais de 8 caracteres.")
+    def password(self, value: str):
+        if not value:
+            raise ValueError("Senha não pode ser vazia!")
+        if not self.is_valid_password(value):
+            raise ValueError("Senha inválida! A senha está incorreta.")
+        self._password = value
 
+    # ===== Métodos de classe e utilidades =====
     @classmethod
     def create_with_credentials(cls, user, password):
         connection = cls()
@@ -49,15 +53,16 @@ class Connection:
     
     @staticmethod
     def login_message(user, msg):
-        print(f'login: {user}, {msg}')
+        print(f"login: {user}, {msg}")
 
+    # ===== Conexão =====
     def connect(self):
         if self._user and self._password:
-            if self._user in self._valid_users and self._valid_users[self._user] == self._password:
+            if self._valid_users[self._user] == self._password:
                 self.connected = True
                 self.login_message(self._user, "conectado com sucesso!")
             else:
-                raise ValueError("Login ou senha incorretos!")
+                raise ValueError("Senha incorreta!")
         else:
             raise ValueError("Usuário ou senha não definidos!")
 
@@ -68,10 +73,10 @@ class Connection:
         else:
             print("Nenhuma conexão ativa.")
 
+    # ===== Representação =====
     def __str__(self):
         status = "Conectado" if self.connected else "Desconectado"
         return f"Connection(user={self._user}, host={self.host}, status={status})"
-        
 
 # =====================
 # Login interativo
@@ -82,8 +87,21 @@ try:
 
     user = Connection.create_with_credentials(login, senha)
     user.connect()
-    print(user)      # Mostra status conectado
-    #user.disconnect()
+    print(user)   # Mostra status conectado
 
+except Exception as e:
+    print(f"Erro: {e}")
+
+ # Loop até o usuário digitar "sair"
+# Loop até o usuário digitar "sair"
+try:
+    while True:
+        comando = input("\nDigite 'sair' para encerrar o sistema: ").strip().lower()
+        if comando == "sair":
+            user.disconnect()
+            print("Sistema encerrado.")
+            break
+        else:
+            print("Comando inválido. Digite 'sair' para sair.")
 except Exception as e:
     print(f"Erro: {e}")
