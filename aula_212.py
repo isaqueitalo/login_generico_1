@@ -3,14 +3,15 @@ class Connection:
     def __init__(self, host='localhost'):
         self.host = host
         self.user = None
-        self.password = None
+        self._password = None
+        self.connected = False  # estado da conexão
 
     def set_user(self, user):
         self.user = user
 
     def set_password(self, password):
         if self.is_valid_password(password):
-            self.password = password
+            self._password = password
         else:
             raise ValueError("Senha inválida! A senha deve ter mais de 8 caracteres.")
 
@@ -29,12 +30,32 @@ class Connection:
     def login_message(user, msg):
         print(f'login: {user}, {msg}')
 
+    def connect(self):
+        if self.user and self._password:
+            self.connected = True
+            self.login_message(self.user, "conectado com sucesso!")
+        else:
+            raise ValueError("Usuário ou senha não definidos!")
+
+    def disconnect(self):
+        if self.connected:
+            self.connected = False
+            print("Conexão encerrada.")
+        else:
+            print("Nenhuma conexão ativa.")
+
+    def __str__(self):
+        status = "Conectado" if self.connected else "Desconectado"
+        return f"Connection(user={self.user}, host={self.host}, status={status})"
         
 
-# Usando o método de classe
-user_1 = Connection.create_with_credentials('admin', 'admin 123')
+# =====================
+# Exemplo de uso
+# =====================
+user_1 = Connection.create_with_credentials("admin", "admin 123")
 
-print(user_1.user)      # admin
-print(user_1.password)  # admin 123
-Connection.login_message(user_1.user, 'logado com sucesso!')
-
+print(user_1)              # Mostra info da conexão (desconectado)
+user_1.connect()           # Conecta
+print(user_1)              # Mostra info (conectado)
+user_1.disconnect()        # Desconecta
+print(user_1)              # Mostra info (desconectado)
