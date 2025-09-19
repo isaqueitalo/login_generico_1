@@ -36,7 +36,10 @@ class Connection:
         if not value:
             raise ValueError("Senha não pode ser vazia!")
         if not self.is_valid_password(value):
-            raise ValueError("Senha inválida! A senha está incorreta.")
+            raise ValueError("Senha inválida! A senha deve ter mais de 8 caracteres.")
+        # 🚨 Aqui entra a validação com base no usuário
+        if self._user and self._valid_users[self._user] != value:
+            raise ValueError("Senha incorreta para este usuário!")
         self._password = value
 
     # ===== Métodos de classe e utilidades =====
@@ -58,13 +61,10 @@ class Connection:
     # ===== Conexão =====
     def connect(self):
         if self._user and self._password:
-            if self._valid_users[self._user] == self._password:
-                self.connected = True
-                self.login_message(self._user, "conectado com sucesso!")
-            else:
-                raise ValueError("Senha incorreta!")
+            self.connected = True
+            self.login_message(self._user, "conectado com sucesso!")
         else:
-            raise ValueError("Usuário ou senha não definidos!")
+            raise ValueError("Usuário ou senha não digitados!")
 
     def disconnect(self):
         if self.connected:
@@ -83,9 +83,9 @@ class Connection:
 # =====================
 try:
     login = input("Digite o usuário: ")
-    senha = input("Digite a senha: ")
+    password = input("Digite a senha: ")
 
-    user = Connection.create_with_credentials(login, senha)
+    user = Connection.create_with_credentials(login, password)
     user.connect()
     print(user)   # Mostra status conectado
 
